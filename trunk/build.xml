@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<!-- Ant build.xml 
+@author: panxy
+@version: $Id: build.xml,v 1.6 2007/11/07 06:35:08 sunli Exp $
+ -->
+<project name="jboss_monitor" default="jar" basedir=".">
+
+	<tstamp>
+		<format property="today" pattern="yyyyMMdd" />
+		<format property="TimeSign" pattern="yyyy-MM-dd HH.mm.ss"/>
+	</tstamp>
+
+	<!-- Allow this to be overriden by others importing this project. -->
+	<dirname property="imported.basedir" file="${ant.file.jhf_core}" />
+
+	<!-- Give user a chance to override without editing this file or typing -D -->
+	<!--<property file="${imported.basedir}/build.properties" />-->
+
+	<!-- added by roger -->
+
+	<!-- define project's name -->
+	<property name="name" value="jboss_monitor" />
+	<property name="version" value="1.0" />
+
+	<!-- define global properties -->
+	<property name="build.dir" value="../build" />
+	<property name="classes.dir" value="${build.dir}/classes/${name}" />
+	<property name="src.java.dir" value="src" />
+	<property name="src.test.dir" value="test" />
+
+	<property name="lib.dir" value="${imported.basedir}/lib" />
+
+	<property name="dist.dir" value="../../../dist" />
+
+	<property name="javac.debug" value="true" />
+	<property name="javac.deprecation" value="false" />
+	<property name="src.encoding" value="utf-8" />
+
+	<patternset id="meta.files">
+		<include name="**/*.SQL" />
+		<include name="**/*.dtd" />
+		<include name="**/*.xml" />
+		<include name="**/*.tld" />
+		<include name="**/*.xslt" />
+		<include name="**/*.properties" />
+		<include name="**/*.js" />
+		<include name="**/*.html" />
+		<include name="**/*.xhtml" />
+	</patternset>
+
+	<!-- define classpath and lib -->
+	<fileset id="lib"
+	         dir="${imported.basedir}"
+	         description="compile-time dependencies">
+		<include name="lib/*.jar" />
+	</fileset>
+
+	<!-- define classpath variable -->
+	<path id="build.classpath">
+		<fileset refid="lib" />
+	</path>
+
+	<target name="mail">
+		<mail mailhost="mail.bestwiz.cn"
+		      mailport="25"
+		      subject="[${name}][${}]jhf daily build"
+		      encoding="plain"
+		      charset="gbk"
+		      tolist="jhf@bestwiz.cn"
+		      messagefile="${name}.log">
+			<from address="jhf-dev@10.15.1.32" />
+			<replyto address="jhf-dev@10.15.1.32" />
+		</mail>
+	</target>
+
+	<!-- define target -->
+	<target name="init" description="Initialize the build" depends="cvsup">
+		<record name="${name}.log" action="start" />
+		<echo message="Build ${name} ${version}" />
+		<mkdir dir="${classes.dir}" />
+		
+        <copy todir="${classes.dir}">
+            <fileset dir="${src.java.dir}">
+                <patternset refid="meta.files"/>
+            </fileset>
+        </copy>
+       
+		<record name="${name}.log" action="stop" />
+	</target>
+
+	<target name="compile" depends="init" description="compile the project">
+		<record name="${name}.log" action="start" />
+		<mkdir dir="${classes.dir}" />
+		<javac destdir="${classes.dir}"
+		       classpathref="build.classpath"
+		       debug="${javac.debug}"
+		       deprecation="${javac.deprecation}"
+		       nowarn="on"
+		       encoding="${src.encoding}"
+		       failonerror="false">
+			<src path="${src.java.dir}" />
+		</javac>
+		<record name="${name}.log" action="stop" />
+	</target>
+
+	<target name="jar"
+	        depends="compile"
+	        description="Build the distribution .jar file">
+		<record name="${name}.log" action="start" />
+		<mkdir dir="${dist.dir}/${today}" />
+		<delete file="${basedir}/${name}.jar"/>
+		<jar jarfile="${basedir}/${name}.jar" basedir="${classes.dir}">
+		
+			<include name="**/*.class" />
+			<exclude name="**/test/*.class" />
+			<patternset refid="meta.files" />
+			<manifest>
+				<attribute name="Copyright" value="BestWiz" />
+				<attribute name="${name}-Version" value="${version}" />
+				<attribute name="Distribution-TimeSign" value="${TimeSign}" />
+			</manifest>
+		</jar>
+		<copy file="${basedir}/${name}.jar" todir="${dist.dir}/${today}" />
+		<record name="${name}.log" action="stop" />
+
+		<!-- antcall target="mail" / -->
+	</target>
+
+	<target name="cvsup" depends="clean">
+		<!--<record name="${name}.log" action="start" />-->
+		<cvs package="." command="up -P -d" />
+		<!--<record name="${name}.log" action="stop" />-->
+
+		<!--<cvschangelog append="false" destfile="${name}_cvschg_${today}.xml" />-->
+	</target>
+	<target name="clean" >
+		<delete dir="${classes.dir}"/>
+	</target>
+</project>
