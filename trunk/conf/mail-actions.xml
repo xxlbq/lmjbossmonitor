@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id: mail-actions.xml,v 1.4 2007/11/08 03:05:19 panxy Exp $ -->
+
+<!-- 
+   | 
+ -->
+
+<server>
+	<mail 
+		name = "queueOverStockMail" 
+		host = "mail2.bestwiz.cn"
+		subject = "Jms Monitor Message Overstock "
+		content = "mail_content_templet/QueueStockTemplet.txt"
+		fromAddress = "mj-monitor@mail2.bestwiz.cn"
+		toAddress = "panxy@bestwiz.cn"
+		bccAddress = "jhf-monitor@mail2.bestwiz.cn"
+		encoding = "UTF-8"
+	/>
+	<mail 
+		name = "topicOverStockMail" 
+		host = "mail2.bestwiz.cn"
+		subject = "Jms Monitor Message Overstock "
+		content = "mail_content_templet/TopicStockTemplet.txt"
+		fromAddress = "mj-monitor@mail2.bestwiz.cn"
+		toAddress = "panxy@bestwiz.cn"
+		bccAddress = "jhf-monitor@mail2.bestwiz.cn"
+		encoding = "UTF-8"
+	/>
+	<mail 
+		name = "mqMonitorHa" 
+		host = "mail2.bestwiz.cn"
+		subject = "Jboss Mq Down"
+		content = "mail_content_templet/MqMonitorHa.txt"
+		fromAddress = "mj-monitor@mail2.bestwiz.cn"
+		toAddress = "panxy@bestwiz.cn"
+		bccAddress = "jhf-monitor@mail2.bestwiz.cn"
+		encoding = "UTF-8"
+	/>
+</server>
