@@ -1,0 +1,9 @@
+JmsIp: $Ip
+
+$CanonicalName is overstock
+
+Name: $Name
+
+AllMessageCount: $AllMessageCount
+
+AllSubscriptionsCount: $AllSubscriptionsCount
